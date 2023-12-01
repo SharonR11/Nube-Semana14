@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link type="text/css" href='{% static "css/menu.css" %}' rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/feather-icons"></script>    
+</head>
+<body>
+    <section class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+                    <h3>Ingresar Contacto</h3>
+                    <div style="max-width: 300px;">
+                        <form action="/registrar/" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                              <div class="row ">
+                                  <div class="col-12">
+                                      <label for="" class="form-label">Nombres</label>
+                                      <input type="text" class="form-control" name="txtnombre" required>
+                                  </div>
+                                  <div class="col-12">
+                                      <label for="" class="form-label">Apellidos</label>
+                                      <input type="text" class="form-control" name="txtapellido" required>
+                                  </div>
+                                  <div class="col-12">
+                                      <label for="" class="form-label">Email</label>
+                                      <input type="email" step="any" class="form-control" name="txtemail" required>
+                                  </div>
+                                  <div class="col-12">
+                                      <label for="address" class="form-label">Celular</label>
+                                      <input type="number" class="form-control" name="txtcelular" required>
+                                  </div>
+                                  <div class="col-12">
+                                      <label for="address" class="form-label">Fecha de Nacimiento</label>
+                                      <input type="date" class="form-control" name="txtfecha_nac" required>
+                                  </div>
+                                  <div class="col-12">
+                                      <label for="address" class="form-label">Foto</label>
+                                      <input type="file" class="form-control" name="txtfoto" required>
+                                  </div>
+                              </div>
+                              <hr class="my-4">
+                              <button class="w-100 btn btn-primary btn-lg" type="submit">Registrar</button>            
+                          </form>
+                    </div>
+                </div>
+                <div class="col-8">
+                    <h1>Agenda de Contactos</h1>
+                    <div class="mb-3">
+                        <!-- Campo de búsqueda por apellido -->
+                        <form id="formBusqueda" method="get">
+                            <label for="apellido">Buscar por Apellido:</label>
+                             <input type="text" class="form-control" id="apellido" name="apellido" value="{{apellido}}" placeholder="Ingrese el apellido">
+                            <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+                        </form>
+                    </div>
+                    <div id="resultadosBusqueda">
+                        <table class="table table-sm smaller-width table-auto">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombres</th>
+                                    <th>Apellidos</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Celular</th>
+                                    <th scope="col">Fecha de Nacimiento</th>
+                                    <th scope="col">Foto</th>
+                                    <th scope="col" colspan="2">Opciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                
+                                    {% for p in persona_list %}
+                                        <tr>
+                                            <th scope="row">{{p.idPersona}}</th>
+                                            <td>{{p.nombre}}</td>
+                                            <td>{{p.apellido}}</td>
+                                            <td>{{p.email}}</td>
+                                            <td>{{p.celular}}</td>
+                                            <td>{{p.fecha_nac}}</td>
+                                            <!-- <td>{{p.foto}}</td> -->
+                                            <td><img src="{{p.foto.url}}" style="width: 100px; height: 100px;" alt="foto"></td>
+                                            
+                                            <td>
+                                                <a class="btn btn-primary btn-sm"  href="/data/{{p.idPersona}}">Edit</a>
+                                                <a href="/eliminar/{{p.idPersona}}" style="color: red;"><i data-feather="trash-2"></i></a>
+                                            </td>
+                                        </tr>
+                
+                                    {% endfor %}
+                                
+                                    
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+<script>
+    feather.replace()
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    document.getElementById('formBusqueda').addEventListener('submit', function(event) {
+    event.preventDefault();
+    let apellido = document.getElementById('apellido').value;
+
+    fetch(`?apellido=${apellido}`)
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('resultadosBusqueda').innerHTML = data;
+        });
+});
+
+</script>
+</html>
